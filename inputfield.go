@@ -108,7 +108,7 @@ type InputField struct {
 	width  int
 }
 
-func (i *InputField) SetWidth(a int) {
+func (i *InputField) SetAutoCompleteWidth(a int) {
 	i.width = a
 }
 
