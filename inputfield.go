@@ -105,6 +105,11 @@ type InputField struct {
 
 	fieldX int // The x-coordinate of the input field as determined during the last call to Draw().
 	offset int // The number of bytes of the text string skipped ahead while drawing.
+	width  int
+}
+
+func (i *InputField) SetWidth(a int) {
+	i.width = a
 }
 
 // NewInputField returns a new input field.
@@ -504,15 +509,17 @@ func (i *InputField) Draw(screen tcell.Screen) {
 	if i.autocompleteList != nil {
 		// How much space do we need?
 		lheight := i.autocompleteList.GetItemCount()
-		lwidth := 0
-		for index := 0; index < lheight; index++ {
-			entry, _ := i.autocompleteList.GetItemText(index)
-			width := TaggedStringWidth(entry)
-			if width > lwidth {
-				lwidth = width
+		if i.width == 0 {
+			lwidth := 0
+			for index := 0; index < lheight; index++ {
+				entry, _ := i.autocompleteList.GetItemText(index)
+				width := TaggedStringWidth(entry)
+				if width > lwidth {
+					lwidth = width
+				}
 			}
+			i.width = lwidth
 		}
-
 		// We prefer to drop down but if there is no space, maybe drop up?
 		lx := x
 		ly := y + 1
@@ -526,7 +533,7 @@ func (i *InputField) Draw(screen tcell.Screen) {
 		if ly+lheight >= sheight {
 			lheight = sheight - ly
 		}
-		i.autocompleteList.SetRect(lx, ly, lwidth, lheight)
+		i.autocompleteList.SetRect(lx, ly, i.width, lheight)
 		i.autocompleteList.Draw(screen)
 	}
 
@@ -699,13 +706,13 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			} else {
 				finish(key)
 			}
-		case tcell.KeyDown:
+		case tcell.KeyDown, tcell.KeyCtrlN:
 			if i.autocompleteList != nil {
 				autocompleteSelect(1)
 			} else {
 				finish(key)
 			}
-		case tcell.KeyUp, tcell.KeyBacktab: // Autocomplete selection.
+		case tcell.KeyUp, tcell.KeyBacktab, tcell.KeyCtrlP: // Autocomplete selection.
 			if i.autocompleteList != nil {
 				autocompleteSelect(-1)
 			} else {
