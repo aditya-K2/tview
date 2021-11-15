@@ -190,7 +190,7 @@ func (i *InputField) SetFieldBackgroundColor(color tcell.Color) *InputField {
 
 // SetAutocompleteBackgroundColor sets the background color of the autocompleteList
 func (i *InputField) SetAutocompleteBackgroundColor(color tcell.Color) *InputField {
-	i.autocompleteList.SetBackgroundColor(color)
+	i.autocompleteBackgroundColor = color
 	return i
 }
 
