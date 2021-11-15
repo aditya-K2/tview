@@ -1,6 +1,7 @@
 package tview
 
 import (
+	"fmt"
 	"math"
 	"regexp"
 	"strings"
@@ -539,6 +540,7 @@ func (i *InputField) Draw(screen tcell.Screen) {
 func (i *InputField) autocompleteSelect(offset int) {
 	count := i.autocompleteList.GetItemCount()
 	newEntry := i.autocompleteList.GetCurrentItem() + offset
+	fmt.Println(newEntry)
 	if newEntry >= count {
 		newEntry = 0
 	} else if newEntry < 0 {
