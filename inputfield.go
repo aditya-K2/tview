@@ -185,7 +185,7 @@ func (i *InputField) SetFieldBackgroundColor(color tcell.Color) *InputField {
 
 // SetAutocompleteBackgroundColor sets the background color of the autocompleteList
 func (i *InputField) SetAutocompleteBackgroundColor(color tcell.Color) *InputField {
-	i.autocompleteBackgroundColor = color
+	i.autocompleteList.SetBackgroundColor(color)
 	return i
 }
 
@@ -205,6 +205,26 @@ func (i *InputField) SetAutocompleteMainTextColor(color tcell.Color) *InputField
 func (i *InputField) SetAutocompleteSelectedTextColor(color tcell.Color) *InputField {
 	i.autocompleteSelectedTextColor = color
 	return i
+}
+
+// GetAutocompleteBackgroundColor returns the background color of the autocompleteList
+func (i *InputField) GetAutocompleteBackgroundColor() tcell.Color {
+	return i.autocompleteBackgroundColor
+}
+
+// GetAutocompleteSelectBackgroundColor returns the background color of the Selection in autocompleteList
+func (i *InputField) GetAutocompleteSelectBackgroundColor() tcell.Color {
+	return i.autocompleteSelectedBackgroundColor
+}
+
+// GetAutocompleteMainTextColor returns the color of the Main Text in autocompleteList
+func (i *InputField) GetAutocompleteMainTextColor() tcell.Color {
+	return i.autocompleteMainTextColor
+}
+
+// GetAutocompleteSelectedTextColor returns the text color of Selection in the autocompleteList
+func (i *InputField) GetAutocompleteSelectedTextColor() tcell.Color {
+	return i.autocompleteSelectedTextColor
 }
 
 // SetFieldTextColor sets the text color of the input area.
