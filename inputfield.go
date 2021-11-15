@@ -516,6 +516,20 @@ func (i *InputField) Draw(screen tcell.Screen) {
 	}
 }
 
+func (i *InputField) autocompleteSelect(offset int) {
+	count := i.autocompleteList.GetItemCount()
+	newEntry := i.autocompleteList.GetCurrentItem() + offset
+	if newEntry >= count {
+		newEntry = 0
+	} else if newEntry < 0 {
+		newEntry = count - 1
+	}
+	i.autocompleteList.SetCurrentItem(newEntry)
+	i.text, _ = i.autocompleteList.GetItemText(newEntry) // Don't trigger changed function twice.
+	i.text = stripTags(i.text)
+	i.SetText(i.text)
+}
+
 // InputHandler returns the handler for this primitive.
 func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
 	return i.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
@@ -565,19 +579,6 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		}
 
 		// Change the autocomplete selection.
-		autocompleteSelect := func(offset int) {
-			count := i.autocompleteList.GetItemCount()
-			newEntry := i.autocompleteList.GetCurrentItem() + offset
-			if newEntry >= count {
-				newEntry = 0
-			} else if newEntry < 0 {
-				newEntry = count - 1
-			}
-			i.autocompleteList.SetCurrentItem(newEntry)
-			currentText, _ = i.autocompleteList.GetItemText(newEntry) // Don't trigger changed function twice.
-			currentText = stripTags(currentText)
-			i.SetText(currentText)
-		}
 
 		// Finish up.
 		finish := func(key tcell.Key) {
@@ -662,7 +663,7 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			end()
 		case tcell.KeyEnter:
 			if i.autocompleteList != nil {
-				autocompleteSelect(0)
+				i.autocompleteSelect(0)
 				i.autocompleteList = nil
 			} else {
 				finish(key)
@@ -675,19 +676,19 @@ func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			}
 		case tcell.KeyTab:
 			if i.autocompleteList != nil {
-				autocompleteSelect(0)
+				i.autocompleteSelect(0)
 			} else {
 				finish(key)
 			}
 		case tcell.KeyDown:
 			if i.autocompleteList != nil {
-				autocompleteSelect(1)
+				i.autocompleteSelect(1)
 			} else {
 				finish(key)
 			}
 		case tcell.KeyUp, tcell.KeyBacktab: // Autocomplete selection.
 			if i.autocompleteList != nil {
-				autocompleteSelect(-1)
+				i.autocompleteSelect(-1)
 			} else {
 				finish(key)
 			}
