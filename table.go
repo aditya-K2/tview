@@ -480,7 +480,7 @@ type Table struct {
 
 	// The style of the selected rows. If this value is the empty struct,
 	// selected rows are simply inverted.
-	selectedStyle tcell.Style
+	SelectedStyle tcell.Style
 
 	// An optional function which gets called when the user presses Enter on a
 	// selected cell. If entire rows selected, the column value is undefined.
@@ -553,7 +553,7 @@ func (t *Table) SetBordersColor(color tcell.Color) *Table {
 //
 //   table.SetSelectedStyle(tcell.Style{})
 func (t *Table) SetSelectedStyle(style tcell.Style) *Table {
-	t.selectedStyle = style
+	t.SelectedStyle = style
 	return t
 }
 
@@ -1289,12 +1289,12 @@ func (t *Table) Draw(screen tcell.Screen) {
 		_, _, lj := c.Hcl()
 		return li < lj
 	})
-	selFg, selBg, selAttr := t.selectedStyle.Decompose()
+	selFg, selBg, selAttr := t.SelectedStyle.Decompose()
 	for _, bgColor := range backgroundColors {
 		entries := cellsByBackgroundColor[bgColor]
 		for _, info := range entries {
 			if info.selected {
-				if t.selectedStyle != (tcell.Style{}) {
+				if t.SelectedStyle != (tcell.Style{}) {
 					defer colorBackground(info.x, info.y, info.w, info.h, selBg, selFg, false, false, selAttr, false)
 				} else {
 					defer colorBackground(info.x, info.y, info.w, info.h, bgColor, info.cell.Color, false, false, 0, true)
