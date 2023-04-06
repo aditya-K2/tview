@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -19,6 +20,7 @@ func main() {
 		SetDoneFunc(func(key tcell.Key) {
 			app.Stop()
 		})
+	inputField.SetAutocompleteMatchFieldWidth(true)
 	inputField.SetAutocompleteFunc(func(currentText string) (entries []string) {
 		if len(currentText) == 0 {
 			return
@@ -42,4 +44,5 @@ func main() {
 	if err := app.EnableMouse(true).SetRoot(inputField, true).Run(); err != nil {
 		panic(err)
 	}
+	defer fmt.Println(inputField.GetFieldWidth())
 }
