@@ -36,6 +36,9 @@ type Box struct {
 	// The border style.
 	borderStyle tcell.Style
 
+	// Selected Border Style
+	borderStyleFocus tcell.Style
+
 	// The title. Only visible if there is a border, too.
 	title string
 
@@ -71,13 +74,14 @@ type Box struct {
 // NewBox returns a Box without a border.
 func NewBox() *Box {
 	b := &Box{
-		width:           15,
-		height:          10,
-		innerX:          -1, // Mark as uninitialized.
-		backgroundColor: Styles.PrimitiveBackgroundColor,
-		borderStyle:     tcell.StyleDefault.Foreground(Styles.BorderColor).Background(Styles.PrimitiveBackgroundColor),
-		titleColor:      Styles.TitleColor,
-		titleAlign:      AlignCenter,
+		width:            15,
+		height:           10,
+		innerX:           -1, // Mark as uninitialized.
+		backgroundColor:  Styles.PrimitiveBackgroundColor,
+		borderStyle:      tcell.StyleDefault.Foreground(Styles.BorderColor).Background(Styles.PrimitiveBackgroundColor),
+		borderStyleFocus: tcell.StyleDefault.Foreground(Styles.BorderColorFocus).Background(Styles.PrimitiveBackgroundColor),
+		titleColor:       Styles.TitleColor,
+		titleAlign:       AlignCenter,
 	}
 	return b
 }
@@ -269,6 +273,13 @@ func (b *Box) SetBorderStyle(style tcell.Style) *Box {
 	return b
 }
 
+// SetBorderStyleFocus sets the box's border style that will be used when box
+// has focus.
+func (b *Box) SetBorderStyleFocus(style tcell.Style) *Box {
+	b.borderStyleFocus = style
+	return b
+}
+
 // SetBorderColor sets the box's border color.
 func (b *Box) SetBorderColor(color tcell.Color) *Box {
 	b.borderStyle = b.borderStyle.Foreground(color)
@@ -355,7 +366,9 @@ func (b *Box) DrawForSubclass(screen tcell.Screen, p Primitive) {
 	// Draw border.
 	if b.border && b.width >= 2 && b.height >= 2 {
 		var vertical, horizontal, topLeft, topRight, bottomLeft, bottomRight rune
+		var borderStyle = b.borderStyle
 		if p.HasFocus() {
+			borderStyle = b.borderStyleFocus
 			horizontal = Borders.HorizontalFocus
 			vertical = Borders.VerticalFocus
 			topLeft = Borders.TopLeftFocus
@@ -371,17 +384,17 @@ func (b *Box) DrawForSubclass(screen tcell.Screen, p Primitive) {
 			bottomRight = Borders.BottomRight
 		}
 		for x := b.x + 1; x < b.x+b.width-1; x++ {
-			screen.SetContent(x, b.y, horizontal, nil, b.borderStyle)
-			screen.SetContent(x, b.y+b.height-1, horizontal, nil, b.borderStyle)
+			screen.SetContent(x, b.y, horizontal, nil, borderStyle)
+			screen.SetContent(x, b.y+b.height-1, horizontal, nil, borderStyle)
 		}
 		for y := b.y + 1; y < b.y+b.height-1; y++ {
-			screen.SetContent(b.x, y, vertical, nil, b.borderStyle)
-			screen.SetContent(b.x+b.width-1, y, vertical, nil, b.borderStyle)
+			screen.SetContent(b.x, y, vertical, nil, borderStyle)
+			screen.SetContent(b.x+b.width-1, y, vertical, nil, borderStyle)
 		}
-		screen.SetContent(b.x, b.y, topLeft, nil, b.borderStyle)
-		screen.SetContent(b.x+b.width-1, b.y, topRight, nil, b.borderStyle)
-		screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, b.borderStyle)
-		screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, b.borderStyle)
+		screen.SetContent(b.x, b.y, topLeft, nil, borderStyle)
+		screen.SetContent(b.x+b.width-1, b.y, topRight, nil, borderStyle)
+		screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, borderStyle)
+		screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, borderStyle)
 
 		// Draw title.
 		if b.title != "" && b.width >= 4 {
